@@ -1,5 +1,4 @@
-import { serve } from "./deps";
-
+import { serve } from "./deps.ts";
 
 export function start_server() {
   serve((_req) => {
