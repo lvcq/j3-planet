@@ -1,5 +1,17 @@
 {
   "deno.enable": true,
   "deno.lint": true,
-  "deno.unstable": true
+  "deno.unstable": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "101.35.238.22",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "zly",
+      "database": "zly_test",
+      "username": "zly",
+      "password": "hk980108"
+    }
+  ]
 }

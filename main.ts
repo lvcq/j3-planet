@@ -1,3 +1,3 @@
-import { start_server } from "./src/endpoint.ts";
+import { start } from "./src/entrypoint.ts";
 
-start_server();
+start();
