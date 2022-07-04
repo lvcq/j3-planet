@@ -6,7 +6,7 @@ export async function initialize() {
   const conn = await getConnection();
   try {
     // Create the table
-    await conn.queryObject`CREATE TABLE IF NOT EXISTS ${TABLE_NAME}(
+    await conn.queryObject(`CREATE TABLE IF NOT EXISTS ${TABLE_NAME}(
     id UUID primary key,
     title VARCHAR(64) NOT NULL,
     summary VARCHAR(256) NOT NULL,
@@ -29,7 +29,7 @@ export async function initialize() {
     end;
   $$language plpgsql;
   create trigger ${TABLE_NAME}_trigger before update on ${TABLE_NAME} for each row execute procedure update_datetime();
-    `;
+    `);
   } finally {
     // Release the connection back into the pool
     conn.release();
