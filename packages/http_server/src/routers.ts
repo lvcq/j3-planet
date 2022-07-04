@@ -9,6 +9,7 @@ const apis = new Router()
   });
 
 const routers = new Router()
+  .get("/",(ctx)=>ctx.response.body="Hello zly")
   .use("/api",apis.routes(),apis.allowedMethods());
 
 export default routers;
