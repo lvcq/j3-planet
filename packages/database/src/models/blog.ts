@@ -28,7 +28,7 @@ export async function initialize() {
       return new;
     end;
   $$language plpgsql;
-  create trigger ${TABLE_NAME}_trigger before update on ${TABLE_NAME} for each row execute procedure update_datetime();
+  create or REPLACE trigger ${TABLE_NAME}_trigger before update on ${TABLE_NAME} for each row execute procedure update_datetime();
     `);
   } finally {
     // Release the connection back into the pool
