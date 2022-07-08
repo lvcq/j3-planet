@@ -85,9 +85,12 @@ function parseMdToHtml(md: string) {
 
 export async function insert_blog(blog: Blog) {
   const conn = await getConnection();
+  const stmt = `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${blog.tags || null},${blog.content},${blog.html},${blog.create_by})`
   try {
-    const stmt = `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${blog.tags || null},${blog.content},${blog.html},${blog.create_by})`
     conn.queryArray(stmt);
+  } catch{
+    console.log(`execute sql fail: ${stmt}`);
+    throw Error("insert blog error")
   } finally {
     conn.release();
   }
