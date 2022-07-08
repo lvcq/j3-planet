@@ -6,9 +6,9 @@ export async function start_server() {
   app.use(routers.routes());
   app.use(routers.allowedMethods());
 
-  console.log("http server start listening: 80");
+  console.log("http server start listening: 8080");
 
   await app.listen({
-    port: 80,
+    port: 8080,
   });
 }

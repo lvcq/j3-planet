@@ -13,12 +13,14 @@ export async function initialize() {
     summary VARCHAR(256) NOT NULL,
     category_id UUID NOT NULL,
     tags VARCHAR(128),
-    conent TEXT NOT NULL,
+    content TEXT NOT NULL,
     html TEXT NOT NULL,
+    visible BOOLEAN NOT NULL DEFAULT TRUE,
     create_by UUID NOT NULL,
     create_at TIMESTAMP NOT NULL DEFAULT now(),
     update_at TIMESTAMP NOT NULL DEFAULT now()
 );
+  ALTER TABLE ${TABLE_NAME} ENABLE ROW LEVEL SECURITY;
   comment on column ${TABLE_NAME}.id is '${TABLE_NAME} id';
   comment on column ${TABLE_NAME}.title is '${TABLE_NAME} title';
   comment on column ${TABLE_NAME}.summary is '${TABLE_NAME} summary';
@@ -83,11 +85,11 @@ function parseMdToHtml(md: string) {
 export async function insert_blog(blog: Blog) {
   const conn = await getConnection();
   const stmt =
-    `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${
-      blog.tags || null
-    },${blog.content},${blog.html},${blog.create_by})`;
+    `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES ('${blog.id}','${blog.title}','${blog.summary}','${blog.category_id}',${blog.tags ? '\'' + blog.tags + '\'' : null
+    },'${blog.content}','${blog.html}','${blog.create_by}')`;
   try {
-    conn.queryArray(stmt);
+    console.log("insert: %s", stmt);
+    await conn.queryArray(stmt);
   } catch {
     console.log(`execute sql fail: ${stmt}`);
     throw Error("insert blog error");
