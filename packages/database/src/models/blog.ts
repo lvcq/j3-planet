@@ -29,7 +29,7 @@ export async function initialize() {
       return new;
     end;
   $$language plpgsql;
-  DROP TRIGGER IF EXISTS ${TABLE_NAME}_trigger_name on ${TABLE_NAME};
+  DROP TRIGGER IF EXISTS ${TABLE_NAME}_trigger on ${TABLE_NAME};
   create or REPLACE trigger ${TABLE_NAME}_trigger before update on ${TABLE_NAME} for each row execute procedure update_datetime();
     `);
   } finally {
