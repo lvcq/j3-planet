@@ -6,9 +6,22 @@ export async function start_server() {
   app.use(routers.routes());
   app.use(routers.allowedMethods());
 
-  console.log("http server start listening: 8080");
+  const port = get_port();
+  console.log(`http server start listening: ${port}`);
 
   await app.listen({
-    port: 8080,
+    port
   });
+}
+
+function get_port(): number {
+  try {
+    const env_port = Deno.env.get("ZLY_PORT");
+    if (!env_port) {
+      return 80;
+    }
+    return Number(env_port);
+  } catch {
+    return 80;
+  }
 }
