@@ -1,14 +1,14 @@
-import { Application } from './deps.ts';
-import routers from './routers.ts';
+import { Application } from "./deps.ts";
+import routers from "./routers.ts";
 
-export async function start_server(){
-    const app =new Application();
-    app.use(routers.routes());
-    app.use(routers.allowedMethods());
+export async function start_server() {
+  const app = new Application();
+  app.use(routers.routes());
+  app.use(routers.allowedMethods());
 
-    console.log("http server start listening: 80")
+  console.log("http server start listening: 80");
 
-    await app.listen({
-        port: 80
-    })    
+  await app.listen({
+    port: 80,
+  });
 }

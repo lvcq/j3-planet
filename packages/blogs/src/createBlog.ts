@@ -1,23 +1,15 @@
+import { db_create_blog, NewBlog, insert_blog } from './deps.ts';
 
-export interface NewBlog {
-  /**
-   * 标题
-   */
-  title: string;
-  /**
-   * 概述
-   */
-  summary: string;
-  /**
-   *  标签
-   */
-  tag: string;
-  /**
-   * 内容 (markdown格式文件)
-   */
-  content: string;
+
+export async function create_blog(info: NewBlog) {
+  const new_blog = db_create_blog(info);
+  await insert_blog(new_blog);
+  return new_blog.id;
 }
 
-export async function createBlog() {
 
-}
+
+
+
+
+

@@ -1,4 +1,5 @@
 import { getConnection } from "../pool.ts";
+import { Marked } from '../deps.ts';
 
 const TABLE_NAME = "blog";
 
@@ -33,6 +34,61 @@ export async function initialize() {
     `);
   } finally {
     // Release the connection back into the pool
+    conn.release();
+  }
+}
+
+export interface Blog {
+  id: string;
+  title: string;
+  summary: string;
+  category_id: string;
+  tags?: string;
+  content: string;
+  html: string;
+  create_by: string;
+  create_at?: number;
+  update_at?: number;
+}
+
+export type NewBlog = Omit<Blog, 'id' | 'html' | 'create_at' | 'update_at'>
+
+
+export function create_blog({
+  title,
+  summary,
+  category_id,
+  tags,
+  content,
+  create_by
+}: NewBlog): Blog {
+
+  const new_id = globalThis.crypto.randomUUID();
+
+  return {
+    id: new_id,
+    title,
+    summary,
+    category_id,
+    tags,
+    content,
+    html: parseMdToHtml(content),
+    create_by
+  }
+
+}
+
+function parseMdToHtml(md: string) {
+  const markup = Marked.parse(md);
+  return markup.content
+}
+
+export async function insert_blog(blog: Blog) {
+  const conn = await getConnection();
+  try {
+    const stmt = `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${blog.tags || null},${blog.content},${blog.html},${blog.create_by})`
+    conn.queryArray(stmt);
+  } finally {
     conn.release();
   }
 }

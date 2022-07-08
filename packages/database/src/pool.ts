@@ -13,9 +13,9 @@ export function initiallzeDatabasePool(count = 5) {
   }
   pool = new Pool(database_url, count, true);
   if (pool !== null) {
-    waiters.forEach(w => w(pool as Pool))
+    waiters.forEach((w) => w(pool as Pool));
   } else {
-    throw Error("connect to database fail")
+    throw Error("connect to database fail");
   }
 }
 
@@ -25,7 +25,7 @@ export async function getConnection() {
   } else {
     return new Promise<PoolClient>((resolve) => {
       waiters.push((pool: Pool) => resolve(pool.connect()));
-    })
+    });
   }
 }
 
