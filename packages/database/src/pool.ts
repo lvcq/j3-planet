@@ -8,6 +8,7 @@ const waiters: Array<PoolWaiter> = [];
 
 export function initiallzeDatabasePool(count = 5) {
   const database_url = Deno.env.get("DATABASE_URL");
+  console.log(database_url);
   if (!database_url) {
     throw Error("please set environment variable `DATABASE_URL`.");
   }

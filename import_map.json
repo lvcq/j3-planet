@@ -1,4 +1,6 @@
 {
-  "@blogs": "./packages/blogs/mod.ts",
-  "@database": "./packages/database/mod.ts"
+  "imports": {
+    "@blogs": "./packages/blogs/mod.ts",
+    "@database": "./packages/database/mod.ts"
+  }
 }

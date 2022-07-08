@@ -1,5 +1,5 @@
 import { getConnection } from "../pool.ts";
-import { Marked } from '../deps.ts';
+import { Marked } from "../deps.ts";
 
 const TABLE_NAME = "blog";
 
@@ -51,8 +51,7 @@ export interface Blog {
   update_at?: number;
 }
 
-export type NewBlog = Omit<Blog, 'id' | 'html' | 'create_at' | 'update_at'>
-
+export type NewBlog = Omit<Blog, "id" | "html" | "create_at" | "update_at">;
 
 export function create_blog({
   title,
@@ -60,9 +59,8 @@ export function create_blog({
   category_id,
   tags,
   content,
-  create_by
+  create_by,
 }: NewBlog): Blog {
-
   const new_id = globalThis.crypto.randomUUID();
 
   return {
@@ -73,24 +71,26 @@ export function create_blog({
     tags,
     content,
     html: parseMdToHtml(content),
-    create_by
-  }
-
+    create_by,
+  };
 }
 
 function parseMdToHtml(md: string) {
   const markup = Marked.parse(md);
-  return markup.content
+  return markup.content;
 }
 
 export async function insert_blog(blog: Blog) {
   const conn = await getConnection();
-  const stmt = `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${blog.tags || null},${blog.content},${blog.html},${blog.create_by})`
+  const stmt =
+    `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES (${blog.id},${blog.title},${blog.summary},${blog.category_id},${
+      blog.tags || null
+    },${blog.content},${blog.html},${blog.create_by})`;
   try {
     conn.queryArray(stmt);
-  } catch{
+  } catch {
     console.log(`execute sql fail: ${stmt}`);
-    throw Error("insert blog error")
+    throw Error("insert blog error");
   } finally {
     conn.release();
   }
