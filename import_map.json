@@ -2,6 +2,7 @@
   "imports": {
     "@blogs": "./packages/blogs/mod.ts",
     "@database": "./packages/database/mod.ts",
-    "@category": "./packages/category/mod.ts"
+    "@category": "./packages/category/mod.ts",
+    "@utils": "./packages/utils/mod.ts"
   }
 }

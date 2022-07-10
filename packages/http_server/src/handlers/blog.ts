@@ -1,4 +1,6 @@
-import { create_blog, NewBlog, RouterContext } from "../deps.ts";
+import { create_blog, NewBlog, Request, RouterContext } from "../deps.ts";
+
+import { get_blog_by_id } from "@database";
 
 type BlogInput = Omit<Partial<NewBlog>, "create_by">;
 
@@ -14,7 +16,7 @@ export async function create_new_blog(
 ) {
   let body_ref: BlogInput = {};
   try {
-    const body: BlogInput = await ctx.request.body({ type: "json" }).value;
+    const body = await read_from_data(ctx.request);
     body_ref = body;
     const { valid, msg } = chenck_input_blog_info(body);
     if (valid) {
@@ -36,13 +38,41 @@ export async function create_new_blog(
         msg,
       };
     }
-  } catch {
+  } catch (e) {
     console.error("create new blog fail with: %O", body_ref);
+    console.error("error info: ", e);
     ctx.response.body = {
       success: false,
       msg: "服务器错误",
     };
   }
+}
+
+async function read_from_data(request: Request): Promise<BlogInput> {
+  const bodyReader = request.body({ type: "form-data" }).value;
+  const stream = bodyReader.stream();
+  const result: BlogInput = {};
+  while (1) {
+    const { done, value } = await stream.next();
+    if (done || !value) {
+      break;
+    }
+    const [name, refValue] = value;
+    if (typeof refValue === "string") {
+      Reflect.set(result, name, refValue);
+    } else if (refValue && refValue.filename) {
+      const content = await read_file_from_tmp(refValue.filename);
+      Reflect.set(result, name, content);
+    }
+  }
+  console.log(result);
+  return result;
+}
+
+async function read_file_from_tmp(path: string): Promise<string> {
+  const decode = new TextDecoder("utf-8");
+  const data = await Deno.readFile(path);
+  return decode.decode(data);
 }
 
 function chenck_input_blog_info(
@@ -67,4 +97,41 @@ function chenck_input_blog_info(
     msg = "内容不能为空";
   }
   return { valid, msg };
+}
+
+export async function get_blog_detail(
+  ctx: RouterContext<
+    "/blog/:id",
+    {
+      id: string;
+    } & Record<string | number, string | undefined>,
+    Record<string, any>
+  >,
+) {
+  try {
+    const id = ctx.params.id?.trim();
+    if (!id) {
+      throw Error("blog id 不能为空");
+    }
+
+    const blog = await get_blog_by_id(id);
+    if (blog) {
+      ctx.response.body = {
+        success: true,
+        data: blog,
+      };
+    } else {
+      ctx.response.body = {
+        success: false,
+        msg: `blog with id "${id}" do not exit.`,
+      };
+    }
+  } catch (e) {
+    console.log("Get blog detail fail.");
+    console.error("Error info: %O", e);
+    ctx.response.body = {
+      success: false,
+      msg: e?.message || e || "服务器错误",
+    };
+  }
 }

@@ -2,6 +2,6 @@
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "importMap": "./import_map.json",
   "tasks": {
-    "dev": "ZLY_PORT=8080 deno run --allow-env --allow-net ./main.ts"
+    "dev": "ZLY_PORT=8080 DATABASE_URL='postgresql://postgres:Cklcc617chen@db.nedpwfomagrpqtfsdoli.supabase.co:5432/postgres?sslmode=disable' deno run --allow-env --allow-net --allow-write --allow-read ./main.ts"
   }
 }

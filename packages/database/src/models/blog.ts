@@ -1,5 +1,6 @@
 import { getConnection } from "../pool.ts";
 import { Marked } from "../deps.ts";
+import { str_to_b64 } from '@utils';
 
 const TABLE_NAME = "blog";
 
@@ -64,15 +65,15 @@ export function create_blog({
   create_by,
 }: NewBlog): Blog {
   const new_id = globalThis.crypto.randomUUID();
-
+  const html = parseMdToHtml(content);
   return {
     id: new_id,
     title,
     summary,
     category_id,
     tags,
-    content,
-    html: parseMdToHtml(content),
+    content:str_to_b64(content),
+    html: str_to_b64(html),
     create_by,
   };
 }
@@ -88,12 +89,30 @@ export async function insert_blog(blog: Blog) {
     `INSERT INTO ${TABLE_NAME} (id,title,summary,category_id,tags,content,html,create_by) VALUES ('${blog.id}','${blog.title}','${blog.summary}','${blog.category_id}',${blog.tags ? '\'' + blog.tags + '\'' : null
     },'${blog.content}','${blog.html}','${blog.create_by}')`;
   try {
-    console.log("insert: %s", stmt);
     await conn.queryArray(stmt);
-  } catch {
+  } catch(e) {
     console.log(`execute sql fail: ${stmt}`);
+    console.error("error info: %O",e);
     throw Error("insert blog error");
   } finally {
+    conn.release();
+  }
+}
+
+export async function get_blog_by_id(id:string):Promise<Blog|null>{
+  const conn = await getConnection();
+  try{
+    const result = await conn.queryObject<Blog>`SELECT id,title,summary,category_id,tags,connent,html,create_by,create_at,update_at FROM blog WHERE id=${id}`; 
+    if(result.rows&&result.rows.length){
+      return result.rows[0];
+    }else{
+      return null;
+    }
+  }catch(e){
+    console.log(`Search blog with ID = ${id} fail.`);
+    console.error("Error info: %O", e);
+    throw Error("get blog fail.");
+  }finally{
     conn.release();
   }
 }
